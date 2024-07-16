@@ -1,4 +1,5 @@
 import moment from "moment";
+import BubbleNameSection from "./name-section";
 
 export default function GiftBubble({ data, isStreak }) {
   return (
@@ -8,12 +9,14 @@ export default function GiftBubble({ data, isStreak }) {
           isStreak ? "bg-green-200" : "bg-green-400"
         }`}
       >
-        <a target="_blank" href={`https://tiktok.com/@${data.uniqueId}`}>
-          🎁 {data.nickname ?? data.uniqueId}
-        </a>
+        <BubbleNameSection data={data} type={"gift"} />
       </span>
-      <span className="break-words w-full px-2 py-1">
+      <span className="break-words w-full px-2 py-1 flex items-center gap-1">
         {isStreak ? "Sending gift " : "Has sent gift "}
+        <div
+          className="w-4 h-4 bg-cover bg-center"
+          style={{ backgroundImage: `url("${data.giftPictureUrl}")` }}
+        ></div>
         {data.giftName} x{data.repeatCount}
       </span>
       <span className="px-2 py-1 border-t text-gray-400 text-[8pt]">

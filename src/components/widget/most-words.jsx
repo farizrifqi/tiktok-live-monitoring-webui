@@ -1,7 +1,7 @@
 export default function MostWords({ words }) {
   return (
     <div className="flex flex-col border rounded-md">
-      <div className="px-2 py-1 border-b">Most Written Word</div>
+      <div className="px-2 py-1 border-b font-bold shadow-sm">Most Word</div>
       <div className="h-[200px] overflow-y-scroll flex flex-col">
         {Object.keys(
           Object.fromEntries(Object.entries(words).sort((a, b) => b[1] - a[1]))

@@ -9,6 +9,13 @@ import GiftBubble from "./bubble/gift-bubble";
 import ViewerBubble from "./bubble/viewer-bubble";
 import LikeBubble from "./bubble/like-buble";
 import MostWords from "./widget/most-words";
+import DisplayChats from "./widget/display-chats";
+import DisplayGifts from "./widget/display-gifts";
+import MostChat from "./widget/most-chat";
+import MostGifter from "./widget/most-gifter";
+import MostGifts from "./widget/most-gifts";
+import DisplayLikes from "./widget/display-likes";
+import MostLiker from "./widget/most-liker";
 const componentBubble = {
   chat: (props) => <ChatBubble {...props} />,
   gift: (props) => <GiftBubble {...props} />,
@@ -35,6 +42,10 @@ export default function Dashboard() {
     setMessage,
     totalLikes,
     words,
+    userChats,
+    userGifts,
+    mostGifts,
+    userLikes,
   } = useContext(AppContext);
 
   const [tempUsername, setTempUsername] = useState("");
@@ -44,6 +55,7 @@ export default function Dashboard() {
   const [showComment, setShowComment] = useState(true);
   const [showGift, setShowGift] = useState(true);
   const [showViewer, setShowViewer] = useState(false);
+  const [columnLimit, setColumnsLimit] = useState(25);
   const chatAnimation = {
     initial: { opacity: 0, y: -300 },
     animate: { opacity: 1, y: 0 },
@@ -89,7 +101,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex flex-col text-xs px-2">
-            <div className="flex">
+            <div className="flex gap-2">
               <input
                 type="checkbox"
                 checked={showComment}
@@ -97,7 +109,7 @@ export default function Dashboard() {
               />
               <label>Show Comment</label>
             </div>
-            <div className="flex">
+            <div className="flex gap-2">
               <input
                 type="checkbox"
                 checked={showLike}
@@ -105,7 +117,7 @@ export default function Dashboard() {
               />
               <label>Show Likes</label>
             </div>
-            <div className="flex">
+            <div className="flex gap-2">
               <input
                 type="checkbox"
                 checked={showGift}
@@ -113,7 +125,7 @@ export default function Dashboard() {
               />
               <label>Show Gift</label>
             </div>
-            <div className="flex">
+            <div className="flex gap-2">
               <input
                 type="checkbox"
                 checked={showViewer}
@@ -154,7 +166,7 @@ export default function Dashboard() {
                   <span>{totalLikes}</span>
                 </div>
               </div>
-              <div className="overflow-y-scroll overflow-x-clip p-2 flex flex-col gap-2 text-xs h-full">
+              <div className="overflow-y-scroll overflow-x-clip p-2 flex flex-col gap-2 text-xs h-full shadow-md">
                 {logs
                   .filter((log) => {
                     if (log.type == "chat") {
@@ -168,13 +180,14 @@ export default function Dashboard() {
                     }
                     return true;
                   })
+                  .filter((l, i) => i <= columnLimit)
                   .map((log, i) =>
                     i === 0 ? (
                       <motion.div
                         className={`flex flex-col border rounded ${
                           log.data.isModerator && "border-red-500"
                         }`}
-                        key={`chat-${i}-${Date.now()}`}
+                        key={`log-${log.type}-${log.data.uniqueId}-${log.data.createTime}`}
                         initial={{ opacity: 0, x: -100 }}
                         animate={{ opacity: 100, x: 0 }}
                         transition={{
@@ -209,9 +222,7 @@ export default function Dashboard() {
                           damping: 20,
                           delay: 0.2,
                         }}
-                        key={`chat-${i}-${Date.now()}-${
-                          log.data.createTime ?? Math.random()
-                        }`}
+                        key={`log-${log.type}-${log.data.uniqueId}-${log.data.createTime}`}
                         title={
                           log.data.createTime &&
                           moment(
@@ -240,8 +251,27 @@ export default function Dashboard() {
                 </Suspense>
               </div>
             )}
-            <div className="grid grid-cols-3 p-1">
+            <div className="grid grid-cols-4 p-1 text-xs gap-3">
+              <DisplayChats
+                chats={logs
+                  .filter((log) => log.type == "chat")
+                  .filter((l, i) => i <= columnLimit)}
+              />
               <MostWords words={words} />
+              <MostChat chats={userChats} />
+              <DisplayGifts
+                gifts={logs
+                  .filter((log) => log.type == "gift" && !log.isStreak)
+                  .filter((l, i) => i <= columnLimit)}
+              />
+              <MostGifter user={userGifts} />
+              <MostGifts gifts={mostGifts} />
+              <DisplayLikes
+                likes={logs
+                  .filter((log) => log.type == "like")
+                  .filter((l, i) => i <= columnLimit)}
+              />
+              <MostLiker user={userLikes} />
             </div>
           </div>
         )}

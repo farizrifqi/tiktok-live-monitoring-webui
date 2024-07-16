@@ -23,16 +23,11 @@ export default function SocketContextProvider({ children }) {
   const [totalLikes, setTotalLikes] = useState(0);
 
   const [words, setWords] = useState({});
-  const getWordIndex = (arr, word) => {
-    let idx = -1;
-    if (arr.length == 0) return idx;
-    if (!word) return idx;
-    for (let i = 0; i < arr.length; i++) {
-      if (idx > -1) break;
-      if (arr[i].word.toLowerCase() == word.toLowerCase()) idx = i;
-    }
-    return idx;
-  };
+  const [userChats, setUserChats] = useState({});
+  const [userGifts, setUserGifts] = useState({});
+  const [mostGifts, setMostGifts] = useState({});
+  const [userLikes, setUserLikes] = useState({});
+
   const resetState = () => {
     setIsLive(false);
     setMessage("");
@@ -44,6 +39,10 @@ export default function SocketContextProvider({ children }) {
     setTotalViewers([]);
     SetCurrentViewers(0);
     setWords({});
+    setUserChats({});
+    setUserGifts({});
+    setMostGifts({});
+    setUserLikes({});
   };
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) setIsloaded(true);
@@ -75,9 +74,8 @@ export default function SocketContextProvider({ children }) {
         socket.on("data-chat", (data) => {
           try {
             data = JSON.parse(data);
-            setChats((prev) => [data, ...prev]);
+            setChats((prev) => [...prev, data]);
             setLogs((prev) => [{ type: "chat", data }, ...prev]);
-
             data.comment.split(" ").forEach((word) => {
               if (words[word.toLowerCase()]) {
                 words[word.toLowerCase()] = words[word.toLowerCase()] + 1;
@@ -85,6 +83,12 @@ export default function SocketContextProvider({ children }) {
                 words[word.toLowerCase()] = 1;
               }
             });
+
+            if (userChats[data.uniqueId]) {
+              userChats[data.uniqueId] = userChats[data.uniqueId] + 1;
+            } else {
+              userChats[data.uniqueId] = 1;
+            }
           } catch (err) {
             console.log(err);
           }
@@ -99,6 +103,19 @@ export default function SocketContextProvider({ children }) {
                 ...prev,
               ]);
             } else {
+              if (userGifts[data.uniqueId]) {
+                userGifts[data.uniqueId] =
+                  userGifts[data.uniqueId] + data.repeatCount;
+              } else {
+                userGifts[data.uniqueId] = data.repeatCount;
+              }
+              if (mostGifts[data.giftName]) {
+                mostGifts[data.giftName] =
+                  mostGifts[data.giftName] + data.repeatCount;
+              } else {
+                mostGifts[data.giftName] = data.repeatCount;
+              }
+              console.log({ data });
               setLogs((prev) => [
                 { type: "gift", isStreak: false, data },
                 ...prev,
@@ -132,8 +149,13 @@ export default function SocketContextProvider({ children }) {
         socket.on("data-like", (data) => {
           try {
             data = JSON.parse(data);
-            console.log({ data });
             setLogs((prev) => [{ type: "like", data }, ...prev]);
+            if (userLikes[data.uniqueId]) {
+              userLikes[data.uniqueId] =
+                userLikes[data.uniqueId] + data.likeCount;
+            } else {
+              userLikes[data.uniqueId] = data.likeCount;
+            }
             setTotalLikes(data.totalLikeCount ?? 0);
           } catch (err) {}
         });
@@ -179,6 +201,10 @@ export default function SocketContextProvider({ children }) {
         setMessage,
         totalLikes,
         words,
+        userChats,
+        userGifts,
+        mostGifts,
+        userLikes,
       }}
     >
       {children}
