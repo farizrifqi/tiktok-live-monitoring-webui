@@ -3,6 +3,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 export const AppContext = createContext();
 export default function SocketContextProvider({ children }) {
+  const [wsUrl, setWsUrl] = useState("ws://localhost:2608");
+
   const [isLoaded, setIsloaded] = useState(false);
   const [connected, setConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -167,7 +169,8 @@ export default function SocketContextProvider({ children }) {
   const initializeSocket = () => {
     if (!username) return;
     if (!socket) {
-      const s = io("ws://localhost:2608", {
+      localStorage.setItem("socketUrl", wsUrl);
+      const s = io(wsUrl, {
         transports: ["websocket"],
         forceNew: false,
       });
@@ -205,6 +208,8 @@ export default function SocketContextProvider({ children }) {
         userGifts,
         mostGifts,
         userLikes,
+        setWsUrl,
+        wsUrl,
       }}
     >
       {children}

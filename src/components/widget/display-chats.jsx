@@ -24,6 +24,7 @@ export default function DisplayChats({ chats }) {
               key={`chat-${i}-${log.data.userId}-${log.data.comment}`}
               initial={{ opacity: 0, x: -100 }}
               animate={{ opacity: 100, x: 0 }}
+              viewport={{ once: true }}
               transition={{
                 type: "spring",
                 stiffness: 260,
@@ -44,8 +45,7 @@ export default function DisplayChats({ chats }) {
               className={`flex flex-col border rounded bg-white shadow-sm ${
                 log.data.isModerator && "border-red-500"
               }`}
-              initial={{ y: 50 }}
-              whileInView={{ y: 0 }}
+              viewport={{ once: true }}
               transition={{
                 type: "spring",
                 stiffness: 260,

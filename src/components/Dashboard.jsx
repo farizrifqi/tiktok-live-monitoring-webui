@@ -46,6 +46,8 @@ export default function Dashboard() {
     userGifts,
     mostGifts,
     userLikes,
+    setWsUrl,
+    wsUrl,
   } = useContext(AppContext);
 
   const [tempUsername, setTempUsername] = useState("");
@@ -56,11 +58,15 @@ export default function Dashboard() {
   const [showGift, setShowGift] = useState(true);
   const [showViewer, setShowViewer] = useState(false);
   const [columnLimit, setColumnsLimit] = useState(25);
-  const chatAnimation = {
-    initial: { opacity: 0, y: -300 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.5 },
-  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      let url = localStorage.getItem("socketUrl");
+      if (url) {
+        setWsUrl(url);
+      }
+    }
+  }, []);
   useEffect(() => {
     initializeSocket();
   }, [username]);
@@ -74,12 +80,23 @@ export default function Dashboard() {
   }, [message]);
   return (
     <main className="min-w-screen h-screen max-h-screen min-h-screen">
-      <div className="block md:hidden">
+      {/* <div className="block md:hidden">
         Currently only supports on Desktop View.
-      </div>
-      <div className="gap-5 hidden lg:flex">
-        <aside className="w-1/4 flex flex-col h-screen sticky top-0 overflow-y-hidden py-1 border-r">
-          <div className="w-fit flex items-center justify-center p-4">
+      </div> */}
+      <div className="gap-5 flex flex-col lg:flex-row">
+        <aside className="lg:w-1/5 flex flex-col h-screen lg:sticky lg:top-0 overflow-y-hidden py-1 border-b lg:border-b-0 lg:border-r">
+          <div className="w-fit flex flex-col justify-center p-4">
+            <div className="flex flex-col text-xs">
+              WS URL:
+              <div className="flex gap-1">
+                <input
+                  onChange={(e) => setWsUrl(e.target.value)}
+                  value={wsUrl}
+                  type="text"
+                  className="border px-3 py-1 outline-none rounded-md"
+                ></input>
+              </div>
+            </div>
             <div className="flex flex-col text-sm">
               Username:
               <div className="flex gap-1">
@@ -87,7 +104,9 @@ export default function Dashboard() {
                   onChange={(e) => setTempUsername(e.target.value)}
                   value={tempUsername}
                   type="text"
-                  className="border px-3 py-1 outline-none rounded-md"
+                  placeholder="@Tiktok"
+                  className="border px-3 py-1 outline-none rounded-md disabled:cursor-not-allowed disabled:bg-gray-200"
+                  disabled={isLoading}
                 ></input>
                 <button
                   onClick={() => {
@@ -192,7 +211,8 @@ export default function Dashboard() {
                         }`}
                         key={`log-${log.type}-${log.data.uniqueId}-${log.data.createTime}`}
                         initial={{ opacity: 0, x: -100 }}
-                        animate={{ opacity: 100, x: 0 }}
+                        whileInView={{ opacity: 100, x: 0 }}
+                        viewport={{ once: true }}
                         transition={{
                           type: "spring",
                           stiffness: 260,
@@ -248,7 +268,7 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-            <div className="grid grid-cols-4 p-1 text-xs gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 p-1 text-xs gap-3">
               <DisplayChats
                 chats={logs
                   .filter((log) => log.type == "chat")
