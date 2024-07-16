@@ -1,6 +1,4 @@
 import Hls from "hls.js";
-import Plyr from "plyr";
-import "plyr/dist/plyr.css";
 import { useEffect, useRef } from "react";
 
 export default function VideoPlayer({ src }) {
@@ -16,11 +14,8 @@ export default function VideoPlayer({ src }) {
       // This will run in safari, where HLS is supported natively
       video.src = src;
     } else if (Hls.isSupported()) {
-      // This will run in all other modern browsers
-
       const hls = new Hls();
       hls.loadSource(src);
-      const player = new Plyr(video, defaultOptions);
       hls.attachMedia(video);
     } else {
       console.error(
