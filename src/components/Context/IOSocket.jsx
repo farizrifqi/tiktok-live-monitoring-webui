@@ -22,7 +22,7 @@ export default function SocketContextProvider({ children }) {
   const [currentViewers, SetCurrentViewers] = useState(0);
   const [totalLikes, setTotalLikes] = useState(0);
 
-  const [words, setWords] = useState([]);
+  const [words, setWords] = useState({});
   const getWordIndex = (arr, word) => {
     let idx = -1;
     if (arr.length == 0) return idx;
@@ -77,31 +77,14 @@ export default function SocketContextProvider({ children }) {
             data = JSON.parse(data);
             setChats((prev) => [data, ...prev]);
             setLogs((prev) => [{ type: "chat", data }, ...prev]);
-            let tempWords = [...words];
-            const wordsMap = new Map(
-              tempWords.map((word) => [word.word, word])
-            );
-            for (const word of data.comment.split(" ")) {
-              if (wordsMap.has(word)) {
-                tempWords = tempWords.map((w) =>
-                  w.word === word ? { ...w, count: w.count + 1 } : w
-                );
-              } else {
-                tempWords.push({ word, count: 1 });
-              }
-            }
 
-            // data.comment.split(" ").forEach((word) => {
-            //   const isExists = Object.keys(tempWords).filter(
-            //     (keyWord) => word.toLowerCase() == keyWord.toLowerCase()
-            //   );
-            //   if (isExists.length == 0) {
-            //     tempWords[word] = 0;
-            //   } else {
-            //     // tempWords[isExists[0]] = tempWords[isExists[0]] + 1;
-            //   }
-            // });
-            setWords(tempWords);
+            data.comment.split(" ").forEach((word) => {
+              if (words[word.toLowerCase()]) {
+                words[word.toLowerCase()] = words[word.toLowerCase()] + 1;
+              } else {
+                words[word.toLowerCase()] = 1;
+              }
+            });
           } catch (err) {
             console.log(err);
           }

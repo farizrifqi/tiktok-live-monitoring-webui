@@ -8,6 +8,7 @@ import ChatBubble from "./bubble/chat-bubble";
 import GiftBubble from "./bubble/gift-bubble";
 import ViewerBubble from "./bubble/viewer-bubble";
 import LikeBubble from "./bubble/like-buble";
+import MostWords from "./widget/most-words";
 const componentBubble = {
   chat: (props) => <ChatBubble {...props} />,
   gift: (props) => <GiftBubble {...props} />,
@@ -170,7 +171,9 @@ export default function Dashboard() {
                   .map((log, i) =>
                     i === 0 ? (
                       <motion.div
-                        className="flex flex-col border rounded"
+                        className={`flex flex-col border rounded ${
+                          log.data.isModerator && "border-red-500"
+                        }`}
                         key={`chat-${i}-${Date.now()}`}
                         initial={{ opacity: 0, x: -100 }}
                         animate={{ opacity: 100, x: 0 }}
@@ -195,7 +198,9 @@ export default function Dashboard() {
                       </motion.div>
                     ) : (
                       <motion.div
-                        className="flex flex-col border rounded"
+                        className={`flex flex-col border rounded ${
+                          log.data.isModerator && "border-red-500"
+                        }`}
                         initial={{ y: -100 }}
                         whileInView={{ y: 0 }}
                         transition={{
@@ -235,21 +240,8 @@ export default function Dashboard() {
                 </Suspense>
               </div>
             )}
-            <div className="grid grid-cols-3">
-              <div className="flex flex-col">
-                <div>Most Written Word</div>
-                <div className="h-[400px] overflow-y-scroll flex flex-col">
-                  {words.map((word) => (
-                    <div
-                      key={`${word.word}-${word.count}`}
-                      className="flex justify-between"
-                    >
-                      <div>{word.word}</div>
-                      <div>{word.count}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="grid grid-cols-3 p-1">
+              <MostWords words={words} />
             </div>
           </div>
         )}

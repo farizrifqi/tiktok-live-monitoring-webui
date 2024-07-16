@@ -11,7 +11,6 @@ export default function VideoPlayer({ src }) {
     video.controls = true;
     const defaultOptions = {};
     if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      // This will run in safari, where HLS is supported natively
       video.src = src;
     } else if (Hls.isSupported()) {
       const hls = new Hls();

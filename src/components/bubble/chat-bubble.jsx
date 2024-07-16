@@ -3,9 +3,9 @@ import moment from "moment";
 export default function ChatBubble({ data }) {
   return (
     <>
-      <span className="font-bold border-b px-2 py-1">
+      <span className={`font-bold border-b px-2 py-1`}>
         <a target="_blank" href={`https://tiktok.com/@${data.uniqueId}`}>
-          💬 {data.nickname ?? data.uniqueId}
+          💬 {data.nickname ?? data.uniqueId} {data.isModerator && "🛠️"}
         </a>
       </span>
       <span className="break-words w-full px-2 py-1">{data.comment}</span>
