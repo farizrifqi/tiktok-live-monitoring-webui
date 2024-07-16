@@ -74,7 +74,7 @@ export default function SocketContextProvider({ children }) {
         socket.on("data-chat", (data) => {
           try {
             data = JSON.parse(data);
-            setChats((prev) => [...prev, data]);
+            setChats((prev) => [data, ...prev]);
             setLogs((prev) => [{ type: "chat", data }, ...prev]);
             data.comment.split(" ").forEach((word) => {
               if (words[word.toLowerCase()]) {

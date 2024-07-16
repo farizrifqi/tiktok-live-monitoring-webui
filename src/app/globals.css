@@ -1,6 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+*::-webkit-scrollbar {
+  width: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: 100vh;
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #e0cbcb;
+  border-radius: 100vh;
+  margin-right: 5px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #c0a0b9;
+}
 body {
-  @apply w-screen h-screen;
+  @apply w-screen h-screen overflow-x-hidden;
 }

@@ -5,18 +5,19 @@ import ChatBubble from "../bubble/chat-bubble";
 import { useEffect, useRef } from "react";
 
 export default function DisplayChats({ chats }) {
-  const bottomRef = useRef(null);
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chats]);
+  // const bottomRef = useRef(null);
+  // useEffect(() => {
+  //   bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [chats]);
 
   return (
     <div className="flex flex-col border rounded-md col-span-2">
       <div className="px-2 py-1 border-b font-bold shadow-sm">Chats</div>
-      <div className="h-[200px] overflow-y-scroll flex flex-col gap-1 p-2 overflow-x-clip">
+      <div className="h-[200px] overflow-y-auto flex flex-col gap-1 p-2 overflow-x-clip">
         {chats.map((log, i) =>
           i === chats.length - 1 ? (
             <motion.div
+              // ref={bottomRef}
               className={`flex flex-col border rounded bg-white shadow-md ${
                 log.data.isModerator && "border-red-500"
               }`}
@@ -63,7 +64,6 @@ export default function DisplayChats({ chats }) {
             </motion.div>
           )
         )}
-        <div ref={bottomRef} />
       </div>
     </div>
   );

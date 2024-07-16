@@ -74,7 +74,10 @@ export default function Dashboard() {
   }, [message]);
   return (
     <main className="min-w-screen h-screen max-h-screen min-h-screen">
-      <div className="flex gap-5">
+      <div className="block md:hidden">
+        Currently only supports on Desktop View.
+      </div>
+      <div className="gap-5 hidden lg:flex">
         <aside className="w-1/4 flex flex-col h-screen sticky top-0 overflow-y-hidden py-1 border-r">
           <div className="w-fit flex items-center justify-center p-4">
             <div className="flex flex-col text-sm">
@@ -185,7 +188,7 @@ export default function Dashboard() {
                     i === 0 ? (
                       <motion.div
                         className={`flex flex-col border rounded ${
-                          log.data.isModerator && "border-red-500"
+                          log.data.isModerator && "border-red-300"
                         }`}
                         key={`log-${log.type}-${log.data.uniqueId}-${log.data.createTime}`}
                         initial={{ opacity: 0, x: -100 }}
@@ -212,16 +215,8 @@ export default function Dashboard() {
                     ) : (
                       <motion.div
                         className={`flex flex-col border rounded ${
-                          log.data.isModerator && "border-red-500"
+                          log.data.isModerator && "border-red-300"
                         }`}
-                        initial={{ y: -100 }}
-                        whileInView={{ y: 0 }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 260,
-                          damping: 20,
-                          delay: 0.2,
-                        }}
                         key={`log-${log.type}-${log.data.uniqueId}-${log.data.createTime}`}
                         title={
                           log.data.createTime &&
@@ -245,10 +240,12 @@ export default function Dashboard() {
         {isLive && (
           <div className="w-full flex flex-col">
             {liveInfo?.stream_url?.hls_pull_url && (
-              <div className="w-full aspect-video relative border rounded-md p-3">
-                <Suspense>
-                  <VideoPlayer src={liveInfo.stream_url.hls_pull_url} />
-                </Suspense>
+              <div className=" border rounded-md p-3 w-full h-auto flex items-center justify-center">
+                <div className="w-[300px]">
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <VideoPlayer src={liveInfo.stream_url.hls_pull_url} />
+                  </Suspense>
+                </div>
               </div>
             )}
             <div className="grid grid-cols-4 p-1 text-xs gap-3">

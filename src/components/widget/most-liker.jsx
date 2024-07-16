@@ -2,7 +2,7 @@ export default function MostLiker({ user }) {
   return (
     <div className="flex flex-col border rounded-md">
       <div className="px-2 py-1 border-b font-bold shadow-sm">Most Like</div>
-      <div className="h-[200px] overflow-y-scroll flex flex-col">
+      <div className="h-[200px] overflow-y-auto flex flex-col">
         {Object.keys(
           Object.fromEntries(Object.entries(user).sort((a, b) => b[1] - a[1]))
         ).map((uniqId) => (

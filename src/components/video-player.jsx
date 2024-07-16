@@ -1,5 +1,6 @@
 import Hls from "hls.js";
 import { useEffect, useRef } from "react";
+import "media-chrome";
 
 export default function VideoPlayer({ src }) {
   const videoRef = useRef(null);
@@ -23,13 +24,16 @@ export default function VideoPlayer({ src }) {
     }
   }, [src, videoRef]);
   return (
-    <>
-      <video data-displaymaxtap ref={videoRef} />
-      <style jsx>{`
-        video {
-          max-height: 500px;
-        }
-      `}</style>
-    </>
+    <media-controller>
+      <video slot="media" ref={videoRef} playsInline controls={false} />
+      <media-control-bar>
+        <media-play-button></media-play-button>
+        <media-mute-button></media-mute-button>
+        <media-volume-range></media-volume-range>
+        <media-time-range></media-time-range>
+        <media-pip-button></media-pip-button>
+        <media-fullscreen-button></media-fullscreen-button>
+      </media-control-bar>
+    </media-controller>
   );
 }
