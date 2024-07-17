@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.1.2",
     "framer-motion": "^11.3.3",
     "hls.js": "^1.5.13",
     "media-chrome": "^3.2.4",

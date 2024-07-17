@@ -13,7 +13,7 @@ export default function DisplayLikes({ likes }) {
           i === 0 ? (
             <motion.div
               className={`flex flex-col border rounded ${
-                log.data.isModerator && "border-red-500"
+                log.data.isModerator && "border-red-300"
               }`}
               key={`like-${i}-${log.data.uniqueId}-${log.data.likeCount}-${log.data.createTime}`}
               initial={{ opacity: 0, x: -150 }}
@@ -36,7 +36,7 @@ export default function DisplayLikes({ likes }) {
           ) : (
             <motion.div
               className={`flex flex-col border rounded ${
-                log.data.isModerator && "border-red-500"
+                log.data.isModerator && "border-red-300"
               }`}
               initial={{ y: -100 }}
               animate={{ y: 0 }}

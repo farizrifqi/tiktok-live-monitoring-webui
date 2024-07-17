@@ -12,7 +12,7 @@ export default function DislayGifts({ gifts }) {
           i === 0 ? (
             <motion.div
               className={`flex flex-col border rounded ${
-                log.data.isModerator && "border-red-500"
+                log.data.isModerator && "border-red-300"
               }`}
               key={`gift-${i}-${log.data.uniqueId}-${log.data.giftName}-${log.data.repeatCount}`}
               initial={{ opacity: 0, x: -150 }}
@@ -39,7 +39,7 @@ export default function DislayGifts({ gifts }) {
           ) : (
             <motion.div
               className={`flex flex-col border rounded ${
-                log.data.isModerator && "border-red-500"
+                log.data.isModerator && "border-red-300"
               }`}
               initial={{ y: -100 }}
               animate={{ y: 0 }}

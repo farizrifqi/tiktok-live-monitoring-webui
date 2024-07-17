@@ -56,6 +56,7 @@ export default function SocketContextProvider({ children }) {
         });
         socket.on("data-roomInfo", (data) => {
           data = JSON.parse(data);
+          console.log({ liveInfo: data });
           setLiveInfo(data);
         });
         socket.on("data-connection", (data) => {
@@ -153,8 +154,7 @@ export default function SocketContextProvider({ children }) {
             data = JSON.parse(data);
             setLogs((prev) => [{ type: "like", data }, ...prev]);
             if (userLikes[data.uniqueId]) {
-              userLikes[data.uniqueId] =
-                userLikes[data.uniqueId] + data.likeCount;
+              userLikes[data.uniqueId] += data.likeCount;
             } else {
               userLikes[data.uniqueId] = data.likeCount;
             }
@@ -175,12 +175,12 @@ export default function SocketContextProvider({ children }) {
         forceNew: false,
       });
       setSocket(s);
+      setConnected(true);
       s.emit("listenToUsername", username);
     } else {
       resetState();
       socket.emit("listenToUsername", username);
     }
-    setConnected(true);
   };
   return (
     <AppContext.Provider

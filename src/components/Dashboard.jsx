@@ -16,6 +16,12 @@ import MostGifter from "./widget/most-gifter";
 import MostGifts from "./widget/most-gifts";
 import DisplayLikes from "./widget/display-likes";
 import MostLiker from "./widget/most-liker";
+import Options from "./widget/options";
+import Statistics from "./widget/statistics";
+import SettingsDialog from "./Settings";
+import AboutDialog from "./About";
+import Disclaimer from "./Disclaimer";
+
 const componentBubble = {
   chat: (props) => <ChatBubble {...props} />,
   gift: (props) => <GiftBubble {...props} />,
@@ -78,26 +84,41 @@ export default function Dashboard() {
       }, 3000);
     }
   }, [message]);
+
+  const setOptions = (type) => {
+    switch (type) {
+      case "like":
+        setShowLike(!showLike);
+        break;
+      case "comment":
+        setShowComment(!showComment);
+        break;
+      case "gift":
+        setShowGift(!showGift);
+        break;
+      case "viewer":
+        setShowViewer(!showViewer);
+        break;
+    }
+  };
   return (
     <main className="min-w-screen h-screen max-h-screen min-h-screen">
-      {/* <div className="block md:hidden">
-        Currently only supports on Desktop View.
-      </div> */}
       <div className="gap-5 flex flex-col lg:flex-row">
         <aside className="lg:w-1/5 flex flex-col h-screen lg:sticky lg:top-0 overflow-y-hidden py-1 border-b lg:border-b-0 lg:border-r">
-          <div className="w-fit flex flex-col justify-center p-4">
-            <div className="flex flex-col text-xs">
-              WS URL:
-              <div className="flex gap-1">
-                <input
-                  onChange={(e) => setWsUrl(e.target.value)}
-                  value={wsUrl}
-                  type="text"
-                  className="border px-3 py-1 outline-none rounded-md"
-                ></input>
-              </div>
+          <div className="w-full flex flex-col justify-center p-4">
+            <div className="flex items-center justify-end self-end gap-2">
+              <Disclaimer />
+              <AboutDialog />
+
+              <SettingsDialog
+                setWsUrl={setWsUrl}
+                wsUrl={wsUrl}
+                columnLimit={columnLimit}
+                setColumnsLimit={setColumnsLimit}
+              />
             </div>
-            <div className="flex flex-col text-sm">
+
+            <div className="flex flex-col text-sm gap-2">
               Username:
               <div className="flex gap-1">
                 <input
@@ -105,89 +126,48 @@ export default function Dashboard() {
                   value={tempUsername}
                   type="text"
                   placeholder="@Tiktok"
-                  className="border px-3 py-1 outline-none rounded-md disabled:cursor-not-allowed disabled:bg-gray-200"
+                  className="w-full border px-3 py-1 outline-none rounded-md disabled:cursor-not-allowed disabled:bg-gray-200"
                   disabled={isLoading}
                 ></input>
-                <button
-                  onClick={() => {
-                    setIsLoading(true);
-                    setUsername(tempUsername.replace("@", ""));
-                    setMessage("");
-                  }}
-                  className="px-3 py-1 border rounded hover:bg-gray-200 transition-colors disabled:cursor-not-allowed disabled:bg-gray-200"
-                  disabled={isLoading}
-                >
-                  Stream
-                </button>
               </div>
+              <button
+                onClick={() => {
+                  if (tempUsername == "") return;
+                  setIsLoading(true);
+                  setUsername(tempUsername.replace("@", ""));
+                  setMessage("");
+                }}
+                className="px-3 py-1 border rounded hover:bg-gray-200 transition-colors disabled:cursor-not-allowed disabled:bg-gray-200"
+                disabled={isLoading}
+              >
+                Connect
+              </button>
             </div>
           </div>
-          <div className="flex flex-col text-xs px-2">
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                checked={showComment}
-                onChange={(e) => setShowComment(e.target.checked)}
-              />
-              <label>Show Comment</label>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                checked={showLike}
-                onChange={(e) => setShowLike(e.target.checked)}
-              />
-              <label>Show Likes</label>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                checked={showGift}
-                onChange={(e) => setShowGift(e.target.checked)}
-              />
-              <label>Show Gift</label>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                checked={showViewer}
-                onChange={(e) => setShowViewer(e.target.checked)}
-              />
-              <label>Show Joined Viewer</label>
-            </div>
-          </div>
+
           {message && (
             <div className="border px-3 py-1 border-red-500 rounded bg-white drop-shadow-md w-full">
               {message}
             </div>
           )}
+          <Options
+            setOptions={setOptions}
+            options={{ showComment, showLike, showGift, showViewer }}
+          />
           {isLive && (
             <div className="h-full">
               <div className="border-b p-2">
                 <b>Logs</b>
               </div>
-              <div className="flex flex-col">
-                <div className="w-full justify-between flex text-xs px-3 py-1 border-b">
-                  <span>Chats:</span>
-                  <span>{chats.length}</span>
-                </div>
-                <div className="w-full justify-between flex text-xs px-3 py-1 border-b">
-                  <span>Gifts:</span>
-                  <span>{gifts.length}</span>
-                </div>
-                <div className="w-full justify-between flex text-xs px-3 py-1 border-b">
-                  <span>Total Viewers:</span>
-                  <span>{totalViewers.length}</span>
-                </div>
-                <div className="w-full justify-between flex text-xs px-3 py-1 border-b">
-                  <span>Current Viewers:</span>
-                  <span>{currentViewers}</span>
-                </div>
-                <div className="w-full justify-between flex text-xs px-3 py-1 border-b">
-                  <span>Total Likes:</span>
-                  <span>{totalLikes}</span>
-                </div>
-              </div>
+              <Statistics
+                chats={chats}
+                gifts={gifts}
+                totalViewers={totalViewers}
+                currentViewers={currentViewers}
+                totalLikes={totalLikes}
+                liveInfo={liveInfo}
+              />
+
               <div className="overflow-y-scroll overflow-x-clip p-2 flex flex-col gap-2 text-xs h-full shadow-md">
                 {logs
                   .filter((log) => {
@@ -209,7 +189,7 @@ export default function Dashboard() {
                         className={`flex flex-col border rounded ${
                           log.data.isModerator && "border-red-300"
                         }`}
-                        key={`log-${log.type}-${log.data.uniqueId}-${log.data.createTime}`}
+                        key={`log-${i}-${log.type}-${log.data.uniqueId}-${log.data.createTime}`}
                         initial={{ opacity: 0, x: -100 }}
                         whileInView={{ opacity: 100, x: 0 }}
                         viewport={{ once: true }}
@@ -237,7 +217,7 @@ export default function Dashboard() {
                         className={`flex flex-col border rounded ${
                           log.data.isModerator && "border-red-300"
                         }`}
-                        key={`log-${log.type}-${log.data.uniqueId}-${log.data.createTime}`}
+                        key={`log-${i}-${log.type}-${log.data.uniqueId}-${log.data.createTime}`}
                         title={
                           log.data.createTime &&
                           moment(
@@ -258,7 +238,26 @@ export default function Dashboard() {
           )}
         </aside>
         {isLive && (
-          <div className="w-full flex flex-col">
+          <div className="w-full flex flex-col py-1">
+            {liveInfo?.title && (
+              <div className=" border rounded-md p-2 w-full h-auto flex items-center justify-between text-lg font-extrabold">
+                {liveInfo?.title && <span> {liveInfo.title}</span>}
+                {(liveInfo.hashtag?.title || liveInfo.game_tag?.length > 0) && (
+                  <div className="justify-between flex text-xs gap-2">
+                    {liveInfo.game_tag[0] && (
+                      <span className="px-2 py-1 bg-gray-200 font-light tracking-wider rounded">
+                        {liveInfo.game_tag[0].show_name}
+                      </span>
+                    )}
+                    {liveInfo.hashtag.title && (
+                      <span className="px-2 py-1 bg-gray-200 font-light tracking-wider rounded">
+                        #{liveInfo.hashtag.title}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             {liveInfo?.stream_url?.hls_pull_url && (
               <div className=" border rounded-md p-3 w-full h-auto flex items-center justify-center">
                 <div className="w-[300px]">
