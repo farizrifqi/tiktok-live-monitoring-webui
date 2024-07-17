@@ -38,6 +38,7 @@ export default function SocketContextProvider({ children }) {
     setIsLive(false);
     setMessage("");
     setIsLiveConnected(false);
+    setConnected(false);
     setLiveInfo(null);
     setLogs([]);
     setChats([]);
@@ -53,9 +54,20 @@ export default function SocketContextProvider({ children }) {
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) setIsloaded(true);
     if (socket && isLoaded) {
+      socket.off("data-roomInfo");
+      socket.off("data-connection");
+      socket.off("data-islive");
+      socket.off("data-chat");
+      socket.off("data-gift");
+      socket.off("data-member");
+      socket.off("data-viewer");
+      socket.off("data-like");
+      socket.off("connect_error");
+      socket.off("connect");
+      socket.off("disconnect");
       socket.on("data-roomInfo", (data) => {
         data = JSON.parse(data);
-        console.log({ liveInfo: data });
+        // console.log({ liveInfo: data });
         setLiveInfo(data);
       });
       socket.on("data-connection", (data) => {
@@ -191,7 +203,7 @@ export default function SocketContextProvider({ children }) {
         }
       });
       socket.on("connect", () => {
-        console.log("connected");
+        // console.log("connected");
         setConnected(true);
         socket.emit(
           "listenToUsername",
@@ -199,18 +211,25 @@ export default function SocketContextProvider({ children }) {
         );
       });
       socket.on("disconnect", () => {
-        console.log("disconnected");
+        // console.log("disconnected");
         setConnected(false);
       });
     }
-  }, [isLoaded, connected, socket, tried]);
+    // Clean up socket on unmount
+    // return () => {
+    //   if (socket) {
+    //     socket.disconnect();
+    //     socket.off();
+    //   }
+    // };
+  }, [isLoaded, connected, socket, tried, username]);
   const initializeSocket = () => {
     if (!username) {
-      console.log("No username found. Please enter a username.");
+      // console.log("No username found. Please enter a username.");
       return;
     }
     if (!socket) {
-      console.log("Socket not found. Connecting to socket");
+      // console.log("Socket not found. Connecting to socket");
       localStorage.setItem("advttl-socketUrl", wsUrl);
       if (proxy || proxy == "") {
         localStorage.setItem("advttl-proxy", proxy);
@@ -224,9 +243,20 @@ export default function SocketContextProvider({ children }) {
       });
       setSocket(s);
     } else {
-      console.log("Socket found. Requesting data...");
+      // console.log("Socket found. Requesting data...");
 
       resetState();
+      socket.off("data-roomInfo");
+      socket.off("data-connection");
+      socket.off("data-islive");
+      socket.off("data-chat");
+      socket.off("data-gift");
+      socket.off("data-member");
+      socket.off("data-viewer");
+      socket.off("data-like");
+      socket.off("connect_error");
+      socket.off("connect");
+      socket.off("disconnect");
       socket.emit(
         "listenToUsername",
         JSON.stringify({ username, proxy, proxyTimeout })

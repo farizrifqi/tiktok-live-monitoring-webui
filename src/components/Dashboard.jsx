@@ -153,6 +153,7 @@ export default function Dashboard() {
                   setIsLoading(true);
                   setUsername(tempUsername.replace("@", ""));
                   setMessage("");
+                  initializeSocket();
                 }}
                 className="px-3 py-1 border rounded hover:bg-gray-200 transition-colors disabled:cursor-not-allowed disabled:bg-gray-200"
                 disabled={isLoading}
@@ -254,11 +255,11 @@ export default function Dashboard() {
             </div>
           )}
         </aside>
-        {isLive && (
+        {isLive && liveInfo && (
           <div className="w-full flex flex-col py-1">
             {(liveInfo?.title ||
-              liveInfo.hashtag?.title ||
-              liveInfo.game_tag?.length > 0) && (
+              liveInfo?.hashtag?.title ||
+              liveInfo?.game_tag?.length > 0) && (
               <div className=" border rounded-md p-2 w-full h-auto flex items-center justify-between text-lg font-extrabold">
                 <div className="flex items-center gap-1">
                   <div
@@ -269,14 +270,15 @@ export default function Dashboard() {
                   </div>
                   {liveInfo?.title && <span> {liveInfo.title}</span>}{" "}
                 </div>
-                {(liveInfo.hashtag?.title || liveInfo.game_tag?.length > 0) && (
+                {(liveInfo?.hashtag?.title ||
+                  liveInfo?.game_tag?.length > 0) && (
                   <div className="justify-between flex text-xs gap-2">
-                    {liveInfo.game_tag[0] && (
+                    {liveInfo?.game_tag[0] && (
                       <span className="px-2 py-1 bg-gray-200 font-light tracking-wider rounded">
                         {liveInfo.game_tag[0].show_name}
                       </span>
                     )}
-                    {liveInfo.hashtag.title && (
+                    {liveInfo?.hashtag?.title && (
                       <span className="px-2 py-1 bg-gray-200 font-light tracking-wider rounded">
                         #{liveInfo.hashtag.title}
                       </span>
@@ -286,7 +288,7 @@ export default function Dashboard() {
               </div>
             )}
             {liveInfo?.stream_url?.hls_pull_url && (
-              <div className=" border rounded-md p-3 w-full h-auto flex items-center justify-center">
+              <div className=" border rounded-md p-3 w-full h-auto flex items-center justify-center bg-black">
                 <div className="w-[300px]">
                   <Suspense fallback={<div>Loading...</div>}>
                     <VideoPlayer src={liveInfo.stream_url.hls_pull_url} />
