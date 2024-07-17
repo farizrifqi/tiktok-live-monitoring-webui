@@ -16,6 +16,8 @@ export default function SettingsDialog({
   setColumnsLimit,
   proxy,
   setProxy,
+  proxyTimeout,
+  setProxyTimeout,
 }) {
   let [isOpen, setIsOpen] = useState(false);
 
@@ -100,6 +102,24 @@ export default function SettingsDialog({
                       </li>
                     ))}
                   </ul>
+                </div>
+                <div className="flex flex-col">
+                  Proxy Timeout (Milliseconds):
+                  <div className="flex gap-1">
+                    <input
+                      onChange={(e) => {
+                        if (parseInt(e.target.value) < 10000) {
+                          setProxyTimeout(10000);
+                        } else {
+                          setProxyTimeout(e.target.value);
+                        }
+                      }}
+                      value={proxyTimeout}
+                      type="number"
+                      placeholder="10000"
+                      className="border px-3 py-1 outline-none rounded-md"
+                    ></input>
+                  </div>
                 </div>
                 <div className="flex gap-4 items-center justify-end">
                   <button

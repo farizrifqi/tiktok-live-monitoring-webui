@@ -57,6 +57,8 @@ export default function Dashboard() {
     isLiveConnected,
     proxy,
     setProxy,
+    proxyTimeout,
+    setProxyTimeout,
   } = useContext(AppContext);
 
   const [tempUsername, setTempUsername] = useState("");
@@ -70,9 +72,17 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
-      let url = localStorage.getItem("socketUrl");
+      let url = localStorage.getItem("advttl-socketUrl");
       if (url) {
         setWsUrl(url);
+      }
+      let proxy = localStorage.getItem("advttl-proxy");
+      if (proxy) {
+        setProxy(proxy);
+      }
+      let proxyTimeout = localStorage.getItem("advttl-proxyTimeout");
+      if (proxy) {
+        setProxyTimeout(proxyTimeout);
       }
     }
   }, []);
@@ -84,7 +94,7 @@ export default function Dashboard() {
       setTempMsg(message);
       setTimeout(() => {
         setTempMsg("");
-      }, 3000);
+      }, 6000);
     }
   }, [message]);
 
@@ -120,6 +130,8 @@ export default function Dashboard() {
                 setColumnsLimit={setColumnsLimit}
                 proxy={proxy}
                 setProxy={setProxy}
+                proxyTimeout={proxyTimeout}
+                setProxyTimeout={setProxyTimeout}
               />
             </div>
 
@@ -150,7 +162,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {message && (
+          {false && message && (
             <div className="border px-3 py-1 border-red-500 rounded bg-white drop-shadow-md w-full">
               {message}
             </div>

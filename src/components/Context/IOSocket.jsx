@@ -4,7 +4,7 @@ import io from "socket.io-client";
 export const AppContext = createContext();
 export default function SocketContextProvider({ children }) {
   const [wsUrl, setWsUrl] = useState("ws://localhost:2608");
-
+  const [tried, setTried] = useState(1);
   const [isLoaded, setIsloaded] = useState(false);
   const [connected, setConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,9 +29,12 @@ export default function SocketContextProvider({ children }) {
   const [userGifts, setUserGifts] = useState({});
   const [mostGifts, setMostGifts] = useState({});
   const [userLikes, setUserLikes] = useState({});
-  const [proxy, setProxy] = useState("https://43.132.124.11:3128");
+
+  const [proxy, setProxy] = useState("");
+  const [proxyTimeout, setProxyTimeout] = useState(10000);
 
   const resetState = () => {
+    setTried(0);
     setIsLive(false);
     setMessage("");
     setIsLiveConnected(false);
@@ -49,154 +52,185 @@ export default function SocketContextProvider({ children }) {
   };
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) setIsloaded(true);
-    if (isLoaded && connected && username) {
-      if (socket) {
-        socket.on("connect", () => {
-          setConnected(true);
-          console.log("connected to ay");
-        });
-        socket.on("data-roomInfo", (data) => {
-          data = JSON.parse(data);
-          console.log({ liveInfo: data });
-          setLiveInfo(data);
-        });
-        socket.on("data-connection", (data) => {
-          data = JSON.parse(data);
-          if (data.isCon) {
-            setIsLiveConnected(data.isConnected);
-            setIsLive(true);
-          }
+    if (socket && isLoaded) {
+      socket.on("data-roomInfo", (data) => {
+        data = JSON.parse(data);
+        console.log({ liveInfo: data });
+        setLiveInfo(data);
+      });
+      socket.on("data-connection", (data) => {
+        data = JSON.parse(data);
+        if (data.isCon) {
+          setIsLiveConnected(data.isConnected);
+          setIsLive(true);
+        }
 
+        setIsLoading(false);
+      });
+      socket.on("data-islive", (data) => {
+        data = JSON.parse(data);
+        setIsLiveConnected(false);
+        setIsLive(false);
+        setMessage(data.message);
+      });
+      socket.on("data-chat", (data) => {
+        try {
+          data = JSON.parse(data);
+          setChats((prev) => [data, ...prev]);
+          setLogs((prev) => [{ type: "chat", data }, ...prev]);
+          data.comment.split(" ").forEach((word) => {
+            if (words[word.toLowerCase()]) {
+              words[word.toLowerCase()] = words[word.toLowerCase()] + 1;
+            } else {
+              words[word.toLowerCase()] = 1;
+            }
+          });
+
+          if (userChats[data.uniqueId]) {
+            userChats[data.uniqueId] = userChats[data.uniqueId] + 1;
+          } else {
+            userChats[data.uniqueId] = 1;
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      });
+      socket.on("data-gift", (data) => {
+        try {
+          data = JSON.parse(data);
+          setGifts((prev) => [data, ...prev]);
+          if (data.giftType === 1 && !data.repeatEnd) {
+            setLogs((prev) => [
+              { type: "gift", isStreak: true, data },
+              ...prev,
+            ]);
+          } else {
+            if (userGifts[data.uniqueId]) {
+              userGifts[data.uniqueId] = {
+                gifts: userGifts[data.uniqueId].gifts + data.repeatCount,
+                coins:
+                  userGifts[data.uniqueId].coins +
+                  data.repeatCount * (data.diamondCount ?? 1),
+              };
+            } else {
+              userGifts[data.uniqueId] = {
+                gifts: data.repeatCount,
+                coins: data.repeatCount * (data.diamondCount ?? 1),
+              };
+            }
+            if (mostGifts[data.giftName]) {
+              mostGifts[data.giftName] = {
+                count: mostGifts[data.giftName].count + data.repeatCount,
+                user: [...mostGifts[data.giftName].user, data.uniqueId],
+                img: mostGifts[data.giftName].img,
+                coin: mostGifts[data.giftName].coin,
+              };
+            } else {
+              mostGifts[data.giftName] = {
+                count: data.repeatCount,
+                user: [data.uniqueId],
+                img: data.giftPictureUrl,
+                coin: data.diamoundCount ?? 1,
+              };
+            }
+            console.log({ data });
+            setLogs((prev) => [
+              { type: "gift", isStreak: false, data },
+              ...prev,
+            ]);
+          }
+        } catch (err) {}
+      });
+      socket.on("data-member", (data) => {
+        try {
+          data = JSON.parse(data);
+          if (totalViewers.includes(data.uniqueId)) {
+            setLogs((prev) => [
+              { type: "viewer", isRejoin: true, data },
+              ...prev,
+            ]);
+          } else {
+            setTotalViewers((prev) => [...prev, data]);
+            setLogs((prev) => [
+              { type: "viewer", isRejoin: false, data },
+              ...prev,
+            ]);
+          }
+        } catch (err) {}
+      });
+      socket.on("data-viewer", (data) => {
+        try {
+          data = JSON.parse(data);
+          SetCurrentViewers(data.viewerCount);
+        } catch (err) {}
+      });
+      socket.on("data-like", (data) => {
+        try {
+          data = JSON.parse(data);
+          setLogs((prev) => [{ type: "like", data }, ...prev]);
+          if (userLikes[data.uniqueId]) {
+            userLikes[data.uniqueId] += data.likeCount;
+          } else {
+            userLikes[data.uniqueId] = data.likeCount;
+          }
+          setTotalLikes(data.totalLikeCount ?? 0);
+        } catch (err) {}
+      });
+      socket.on("connect_error", (error) => {
+        let tries = tried;
+
+        setTried(parseInt(tries) + 1);
+        setMessage(
+          "Unable to connect to server, trying in 5s... (" + tried + "/3)"
+        );
+        if (tried == 3) {
           setIsLoading(false);
-        });
-        socket.on("data-islive", (data) => {
-          data = JSON.parse(data);
-          setIsLiveConnected(false);
-          setIsLive(false);
-          setMessage(data.message);
-        });
-        socket.on("data-chat", (data) => {
-          try {
-            data = JSON.parse(data);
-            setChats((prev) => [data, ...prev]);
-            setLogs((prev) => [{ type: "chat", data }, ...prev]);
-            data.comment.split(" ").forEach((word) => {
-              if (words[word.toLowerCase()]) {
-                words[word.toLowerCase()] = words[word.toLowerCase()] + 1;
-              } else {
-                words[word.toLowerCase()] = 1;
-              }
-            });
-
-            if (userChats[data.uniqueId]) {
-              userChats[data.uniqueId] = userChats[data.uniqueId] + 1;
-            } else {
-              userChats[data.uniqueId] = 1;
-            }
-          } catch (err) {
-            console.log(err);
-          }
-        });
-        socket.on("data-gift", (data) => {
-          try {
-            data = JSON.parse(data);
-            setGifts((prev) => [data, ...prev]);
-            if (data.giftType === 1 && !data.repeatEnd) {
-              setLogs((prev) => [
-                { type: "gift", isStreak: true, data },
-                ...prev,
-              ]);
-            } else {
-              if (userGifts[data.uniqueId]) {
-                userGifts[data.uniqueId] = {
-                  gifts: userGifts[data.uniqueId].gifts + data.repeatCount,
-                  coins:
-                    userGifts[data.uniqueId].coins +
-                    data.repeatCount * (data.diamondCount ?? 1),
-                };
-              } else {
-                userGifts[data.uniqueId] = {
-                  gifts: data.repeatCount,
-                  coins: data.repeatCount * (data.diamondCount ?? 1),
-                };
-              }
-              if (mostGifts[data.giftName]) {
-                mostGifts[data.giftName] = {
-                  count: mostGifts[data.giftName].count + data.repeatCount,
-                  user: [...mostGifts[data.giftName].user, data.uniqueId],
-                  img: mostGifts[data.giftName].img,
-                  coin: mostGifts[data.giftName].coin,
-                };
-              } else {
-                mostGifts[data.giftName] = {
-                  count: data.repeatCount,
-                  user: [data.uniqueId],
-                  img: data.giftPictureUrl,
-                  coin: data.diamoundCount ?? 1,
-                };
-              }
-              console.log({ data });
-              setLogs((prev) => [
-                { type: "gift", isStreak: false, data },
-                ...prev,
-              ]);
-            }
-          } catch (err) {}
-        });
-        socket.on("data-member", (data) => {
-          try {
-            data = JSON.parse(data);
-            if (totalViewers.includes(data.uniqueId)) {
-              setLogs((prev) => [
-                { type: "viewer", isRejoin: true, data },
-                ...prev,
-              ]);
-            } else {
-              setTotalViewers((prev) => [...prev, data]);
-              setLogs((prev) => [
-                { type: "viewer", isRejoin: false, data },
-                ...prev,
-              ]);
-            }
-          } catch (err) {}
-        });
-        socket.on("data-viewer", (data) => {
-          try {
-            data = JSON.parse(data);
-            SetCurrentViewers(data.viewerCount);
-          } catch (err) {}
-        });
-        socket.on("data-like", (data) => {
-          try {
-            data = JSON.parse(data);
-            setLogs((prev) => [{ type: "like", data }, ...prev]);
-            if (userLikes[data.uniqueId]) {
-              userLikes[data.uniqueId] += data.likeCount;
-            } else {
-              userLikes[data.uniqueId] = data.likeCount;
-            }
-            setTotalLikes(data.totalLikeCount ?? 0);
-          } catch (err) {}
-        });
-      }
-    } else {
-      console.log("Not connected");
+          setTried(1);
+          socket.disconnect();
+          setSocket(null);
+        }
+      });
+      socket.on("connect", () => {
+        console.log("connected");
+        setConnected(true);
+        socket.emit(
+          "listenToUsername",
+          JSON.stringify({ username, proxy, proxyTimeout })
+        );
+      });
+      socket.on("disconnect", () => {
+        console.log("disconnected");
+        setConnected(false);
+      });
     }
-  }, [isLoaded, connected]);
+  }, [isLoaded, connected, socket, tried]);
   const initializeSocket = () => {
-    if (!username) return;
+    if (!username) {
+      console.log("No username found. Please enter a username.");
+      return;
+    }
     if (!socket) {
-      localStorage.setItem("socketUrl", wsUrl);
+      console.log("Socket not found. Connecting to socket");
+      localStorage.setItem("advttl-socketUrl", wsUrl);
+      if (proxy || proxy == "") {
+        localStorage.setItem("advttl-proxy", proxy);
+        localStorage.setItem("advttl-proxyTimeout", proxyTimeout);
+      }
       const s = io(wsUrl, {
         transports: ["websocket"],
         forceNew: false,
+        reconnection: true,
+        reconnectionAttempts: Infinity,
       });
       setSocket(s);
-      setConnected(true);
-      s.emit("listenToUsername", JSON.stringify({ username, proxy }));
     } else {
+      console.log("Socket found. Requesting data...");
+
       resetState();
-      socket.emit("listenToUsername", JSON.stringify({ username, proxy }));
+      socket.emit(
+        "listenToUsername",
+        JSON.stringify({ username, proxy, proxyTimeout })
+      );
     }
   };
   return (
@@ -229,6 +263,8 @@ export default function SocketContextProvider({ children }) {
         wsUrl,
         proxy,
         setProxy,
+        proxyTimeout,
+        setProxyTimeout,
       }}
     >
       {children}
