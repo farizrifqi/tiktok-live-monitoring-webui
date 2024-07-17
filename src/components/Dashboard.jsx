@@ -54,6 +54,9 @@ export default function Dashboard() {
     userLikes,
     setWsUrl,
     wsUrl,
+    isLiveConnected,
+    proxy,
+    setProxy,
   } = useContext(AppContext);
 
   const [tempUsername, setTempUsername] = useState("");
@@ -115,6 +118,8 @@ export default function Dashboard() {
                 wsUrl={wsUrl}
                 columnLimit={columnLimit}
                 setColumnsLimit={setColumnsLimit}
+                proxy={proxy}
+                setProxy={setProxy}
               />
             </div>
 
@@ -239,9 +244,19 @@ export default function Dashboard() {
         </aside>
         {isLive && (
           <div className="w-full flex flex-col py-1">
-            {liveInfo?.title && (
+            {(liveInfo?.title ||
+              liveInfo.hashtag?.title ||
+              liveInfo.game_tag?.length > 0) && (
               <div className=" border rounded-md p-2 w-full h-auto flex items-center justify-between text-lg font-extrabold">
-                {liveInfo?.title && <span> {liveInfo.title}</span>}
+                <div className="flex items-center gap-1">
+                  <div
+                    title={isLiveConnected ? "LIVE!!" : "Not Live."}
+                    className={`${isLiveConnected ? "animate-pulse" : ""}`}
+                  >
+                    {isLiveConnected ? "🟢" : "🔴"}
+                  </div>
+                  {liveInfo?.title && <span> {liveInfo.title}</span>}{" "}
+                </div>
                 {(liveInfo.hashtag?.title || liveInfo.game_tag?.length > 0) && (
                   <div className="justify-between flex text-xs gap-2">
                     {liveInfo.game_tag[0] && (
@@ -276,6 +291,7 @@ export default function Dashboard() {
               <MostWords words={words} />
               <MostChat chats={userChats} />
               <DisplayGifts
+                mostGifts={mostGifts}
                 gifts={logs
                   .filter((log) => log.type == "gift" && !log.isStreak)
                   .filter((l, i) => i <= columnLimit)}

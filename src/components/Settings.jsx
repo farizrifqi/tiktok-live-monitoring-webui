@@ -14,6 +14,8 @@ export default function SettingsDialog({
   setWsUrl,
   columnLimit,
   setColumnsLimit,
+  proxy,
+  setProxy,
 }) {
   let [isOpen, setIsOpen] = useState(false);
 
@@ -73,6 +75,31 @@ export default function SettingsDialog({
                       className="border px-3 py-1 outline-none rounded-md"
                     ></input>
                   </div>
+                </div>
+                <div className="flex flex-col">
+                  Proxy:
+                  <div className="flex gap-1">
+                    <input
+                      onChange={(e) => setProxy(e.target.value)}
+                      value={proxy}
+                      type="text"
+                      className="border px-3 py-1 outline-none rounded-md"
+                    ></input>
+                  </div>
+                  <ul className="text-xs flex flex-col gap-1 ml-1 my-1">
+                    {[
+                      "https://username:password@host:port",
+                      "http://username:password@host:port",
+                      "https://host:port",
+                    ].map((example) => (
+                      <li
+                        key={example}
+                        className="bg-gray-200 w-fit px-1 py-0.5 rounded"
+                      >
+                        {example}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
                 <div className="flex gap-4 items-center justify-end">
                   <button

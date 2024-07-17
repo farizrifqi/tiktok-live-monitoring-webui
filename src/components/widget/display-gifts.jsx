@@ -3,10 +3,18 @@ import { motion } from "framer-motion";
 import moment from "moment";
 import GiftBubble from "../bubble/gift-bubble";
 
-export default function DislayGifts({ gifts }) {
+export default function DislayGifts({ gifts, mostGifts }) {
   return (
     <div className="flex flex-col border rounded-md col-span-2">
-      <div className="px-2 py-1 border-b font-bold shadow-sm">Gifts</div>
+      <div className="px-2 py-1 border-b font-bold shadow-sm flex justify-between items-center">
+        <span>Gifts</span>
+        <span>
+          {Object.values(mostGifts).reduce(
+            (acc, cur) => cur.count * cur.coin + acc,
+            0
+          )}
+        </span>
+      </div>
       <div className="h-[200px] overflow-y-scroll flex flex-col gap-1 p-2 overflow-x-clip">
         {gifts.map((log, i) =>
           i === 0 ? (

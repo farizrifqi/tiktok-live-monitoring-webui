@@ -11,7 +11,15 @@ export default function GiftBubble({ data, isStreak }) {
       >
         <BubbleNameSection data={data} type={"gift"} />
       </span>
-      <span className="break-words w-full px-2 py-1 flex items-center gap-1">
+      <span
+        title={
+          data.diamondCount &&
+          `${data.diamondCount} each - Total ${
+            data.diamondCount * data.repeatCount
+          }`
+        }
+        className="break-words w-full px-2 py-1 flex items-center gap-1"
+      >
         {isStreak ? "Sending gift " : "Has sent gift "}
         <div
           className="w-4 h-4 bg-cover bg-center"

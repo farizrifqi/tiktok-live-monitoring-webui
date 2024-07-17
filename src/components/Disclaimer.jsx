@@ -7,14 +7,34 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 export default function Disclaimer({}) {
   const countClickMap = ["Understand", "UNDERSTAND!!"];
-  let [isOpen, setIsOpen] = useState(true);
-  let [countClick, setCountClick] = useState(0);
+  const [isOpen, setIsOpen] = useState(true);
+  const [countClick, setCountClick] = useState(Number(0));
+  const [isLoaded, setIsLoaded] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) setIsLoaded(true);
+
+    if (isLoaded) {
+      if (isOpen) {
+        let intro = localStorage.getItem("intro");
+        if (intro === "1") {
+          setIsOpen(false);
+        } else {
+          localStorage.setItem("intro", "1");
+          setIsOpen(true);
+        }
+      }
+    }
+  }, [isLoaded, isOpen]);
+
+  const agreeButton = () => {
+    if (countClick >= 1) setIsOpen(false);
+    setCountClick((prev) => prev + 1);
+  };
   return (
     <>
-      <div className="w-full"></div>
       <AnimatePresence>
         {isOpen && (
           <Dialog
@@ -50,10 +70,7 @@ export default function Disclaimer({}) {
                 <div className="flex gap-4 items-center justify-end">
                   <button
                     className="border rounded-md px-3 py-1 hover:bg-gray-100"
-                    onClick={() => {
-                      if (countClick >= 1) setIsOpen(false);
-                      setCountClick((prev) => prev + 1);
-                    }}
+                    onClick={agreeButton}
                   >
                     {countClickMap[countClick]}
                   </button>

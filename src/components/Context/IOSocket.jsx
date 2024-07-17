@@ -29,6 +29,7 @@ export default function SocketContextProvider({ children }) {
   const [userGifts, setUserGifts] = useState({});
   const [mostGifts, setMostGifts] = useState({});
   const [userLikes, setUserLikes] = useState({});
+  const [proxy, setProxy] = useState("https://43.132.124.11:3128");
 
   const resetState = () => {
     setIsLive(false);
@@ -107,16 +108,32 @@ export default function SocketContextProvider({ children }) {
               ]);
             } else {
               if (userGifts[data.uniqueId]) {
-                userGifts[data.uniqueId] =
-                  userGifts[data.uniqueId] + data.repeatCount;
+                userGifts[data.uniqueId] = {
+                  gifts: userGifts[data.uniqueId].gifts + data.repeatCount,
+                  coins:
+                    userGifts[data.uniqueId].coins +
+                    data.repeatCount * (data.diamondCount ?? 1),
+                };
               } else {
-                userGifts[data.uniqueId] = data.repeatCount;
+                userGifts[data.uniqueId] = {
+                  gifts: data.repeatCount,
+                  coins: data.repeatCount * (data.diamondCount ?? 1),
+                };
               }
               if (mostGifts[data.giftName]) {
-                mostGifts[data.giftName] =
-                  mostGifts[data.giftName] + data.repeatCount;
+                mostGifts[data.giftName] = {
+                  count: mostGifts[data.giftName].count + data.repeatCount,
+                  user: [...mostGifts[data.giftName].user, data.uniqueId],
+                  img: mostGifts[data.giftName].img,
+                  coin: mostGifts[data.giftName].coin,
+                };
               } else {
-                mostGifts[data.giftName] = data.repeatCount;
+                mostGifts[data.giftName] = {
+                  count: data.repeatCount,
+                  user: [data.uniqueId],
+                  img: data.giftPictureUrl,
+                  coin: data.diamoundCount ?? 1,
+                };
               }
               console.log({ data });
               setLogs((prev) => [
@@ -176,10 +193,10 @@ export default function SocketContextProvider({ children }) {
       });
       setSocket(s);
       setConnected(true);
-      s.emit("listenToUsername", username);
+      s.emit("listenToUsername", JSON.stringify({ username, proxy }));
     } else {
       resetState();
-      socket.emit("listenToUsername", username);
+      socket.emit("listenToUsername", JSON.stringify({ username, proxy }));
     }
   };
   return (
@@ -210,6 +227,8 @@ export default function SocketContextProvider({ children }) {
         userLikes,
         setWsUrl,
         wsUrl,
+        proxy,
+        setProxy,
       }}
     >
       {children}
