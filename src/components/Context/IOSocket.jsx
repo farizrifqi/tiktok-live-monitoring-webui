@@ -67,7 +67,7 @@ export default function SocketContextProvider({ children }) {
       socket.off("disconnect");
       socket.on("data-roomInfo", (data) => {
         data = JSON.parse(data);
-        // console.log({ liveInfo: data });
+        console.log({ liveInfo: data });
         setLiveInfo(data);
       });
       socket.on("data-connection", (data) => {

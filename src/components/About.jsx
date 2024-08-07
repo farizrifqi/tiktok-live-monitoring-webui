@@ -77,7 +77,7 @@ export default function AboutDialog({}) {
                     <a
                       target="_blank"
                       className="text-blue-400 hover:text-blue-300"
-                      href="https://farizrifqi.link"
+                      href="https://zeranel.dev"
                     >
                       Fariz Rifqi
                     </a>
