@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 export const AppContext = createContext();
 export default function SocketContextProvider({ children }) {
-  const [wsUrl, setWsUrl] = useState("wss://tiktok-server.zeranel.dev");
+  const [wsUrl, setWsUrl] = useState("wss://tt-sv.zeranel.dev");
   const [tried, setTried] = useState(1);
   const [isLoaded, setIsloaded] = useState(false);
   const [connected, setConnected] = useState(false);
