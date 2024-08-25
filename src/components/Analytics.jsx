@@ -33,7 +33,7 @@ export default function Analytics() {
 export const trackClick = (username) => {
   if (!window?.dataLayer) return;
   window.dataLayer.push({
-    event: "downloadClick",
+    event: "trackClick",
     username,
   });
 };

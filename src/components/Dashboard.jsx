@@ -152,7 +152,6 @@ export default function Dashboard() {
                 onClick={() => {
                   if (tempUsername == "") return;
                   trackClick(tempUsername);
-
                   setIsLoading(true);
                   setUsername(tempUsername.replace("@", ""));
                   setMessage("");
