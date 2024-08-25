@@ -21,6 +21,7 @@ import Statistics from "./widget/statistics";
 import SettingsDialog from "./Settings";
 import AboutDialog from "./About";
 import Disclaimer from "./Disclaimer";
+import { trackClick } from "./Analytics";
 
 const componentBubble = {
   chat: (props) => <ChatBubble {...props} />,
@@ -150,6 +151,8 @@ export default function Dashboard() {
               <button
                 onClick={() => {
                   if (tempUsername == "") return;
+                  trackClick(tempUsername);
+
                   setIsLoading(true);
                   setUsername(tempUsername.replace("@", ""));
                   setMessage("");

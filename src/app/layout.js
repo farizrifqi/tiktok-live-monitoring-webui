@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import SocketContextProvider from "@/components/Context/IOSocket";
+import Analytics from "@/components/Analytics";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,7 +13,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}><SocketContextProvider>{children}</SocketContextProvider></body>
+      <body className={inter.className}>
+        <SocketContextProvider>
+          {children}
+        </SocketContextProvider>
+        <Analytics />
+      </body>
     </html>
   );
 }
