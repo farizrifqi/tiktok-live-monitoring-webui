@@ -20,7 +20,8 @@ export default function Disclaimer({}) {
       if (isOpen) {
         let intro = localStorage.getItem("intro");
         if (intro === "1") {
-          setIsOpen(false);
+          let rNum = Math.random();
+          setIsOpen(rNum > 0.9);
         } else {
           localStorage.setItem("intro", "1");
           setIsOpen(true);
