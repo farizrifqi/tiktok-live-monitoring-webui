@@ -34,6 +34,6 @@ export const trackClick = (username) => {
   if (!window?.dataLayer) return;
   window.dataLayer.push({
     event: "trackClick",
-    username,
+    username: username,
   });
 };
