@@ -66,6 +66,16 @@ export default function Disclaimer({}) {
                   consult with the appropriate professionals for any critical
                   decisions or actions.
                 </Description>
+                <Description>
+                  <b>By using this tool</b>, you acknowledge and consent that we
+                  will collect and process the TikTok username you submit for
+                  monitoring purposes. This data is used solely to provide you
+                  with real-time analytics and insights related to the live
+                  stream associated with the submitted username. We prioritize
+                  your privacy and ensure that this information is handled
+                  securely and in compliance with relevant data protection
+                  regulations.
+                </Description>
 
                 <div className="flex gap-4 items-center justify-end">
                   <button
