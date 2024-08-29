@@ -60,16 +60,22 @@ export default function Dashboard() {
     setProxy,
     proxyTimeout,
     setProxyTimeout,
+    isNotifySound,
+    setIsNotifySound,
+    showLike,
+    setShowLike,
+    showComment,
+    setShowComment,
+    showGift,
+    setShowGift,
+    showViewer,
+    setShowViewer,
+    columnLimit,
+    setColumnsLimit,
   } = useContext(AppContext);
 
   const [tempUsername, setTempUsername] = useState("");
   const [tempMsg, setTempMsg] = useState("");
-
-  const [showLike, setShowLike] = useState(true);
-  const [showComment, setShowComment] = useState(true);
-  const [showGift, setShowGift] = useState(true);
-  const [showViewer, setShowViewer] = useState(false);
-  const [columnLimit, setColumnsLimit] = useState(25);
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
@@ -125,6 +131,8 @@ export default function Dashboard() {
               <AboutDialog />
 
               <SettingsDialog
+                isNotifySound={isNotifySound}
+                setIsNotifySound={setIsNotifySound}
                 setWsUrl={setWsUrl}
                 wsUrl={wsUrl}
                 columnLimit={columnLimit}

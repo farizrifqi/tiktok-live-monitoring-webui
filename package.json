@@ -12,6 +12,7 @@
     "@headlessui/react": "^2.1.2",
     "framer-motion": "^11.3.3",
     "hls.js": "^1.5.13",
+    "howler": "^2.2.4",
     "media-chrome": "^3.2.4",
     "moment": "^2.30.1",
     "next": "14.2.5",
@@ -20,6 +21,7 @@
     "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
+    "@types/howler": "^2.2.11",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "postcss": "^8",

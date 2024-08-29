@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
+import SoundNotify from "../sound-notify";
 export const AppContext = createContext();
 export default function SocketContextProvider({ children }) {
   const [wsUrl, setWsUrl] = useState("wss://tt-sv.zeranel.dev");
@@ -32,6 +33,14 @@ export default function SocketContextProvider({ children }) {
 
   const [proxy, setProxy] = useState("");
   const [proxyTimeout, setProxyTimeout] = useState(10000);
+
+  const [showLike, setShowLike] = useState(true);
+  const [showComment, setShowComment] = useState(true);
+  const [showGift, setShowGift] = useState(true);
+  const [showViewer, setShowViewer] = useState(false);
+  const [columnLimit, setColumnsLimit] = useState(25);
+
+  const [isNotifySound, setIsNotifySound] = useState(true);
 
   const resetState = () => {
     setTried(0);
@@ -90,6 +99,8 @@ export default function SocketContextProvider({ children }) {
           data = JSON.parse(data);
           setChats((prev) => [data, ...prev]);
           setLogs((prev) => [{ type: "chat", data }, ...prev]);
+          if (isNotifySound && showComment) SoundNotify({ type: "comment" });
+
           data.comment.split(" ").forEach((word) => {
             if (words[word.toLowerCase()]) {
               words[word.toLowerCase()] = words[word.toLowerCase()] + 1;
@@ -145,7 +156,7 @@ export default function SocketContextProvider({ children }) {
                 coin: data.diamoundCount ?? 1,
               };
             }
-            console.log({ data });
+            if (isNotifySound && showGift) SoundNotify({ type: "gift" });
             setLogs((prev) => [
               { type: "gift", isStreak: false, data },
               ...prev,
@@ -163,6 +174,8 @@ export default function SocketContextProvider({ children }) {
             ]);
           } else {
             setTotalViewers((prev) => [...prev, data]);
+            if (isNotifySound && showViewer) SoundNotify({ type: "viewer" });
+
             setLogs((prev) => [
               { type: "viewer", isRejoin: false, data },
               ...prev,
@@ -295,6 +308,18 @@ export default function SocketContextProvider({ children }) {
         setProxy,
         proxyTimeout,
         setProxyTimeout,
+        isNotifySound,
+        setIsNotifySound,
+        showLike,
+        setShowLike,
+        showComment,
+        setShowComment,
+        showGift,
+        setShowGift,
+        showViewer,
+        setShowViewer,
+        columnLimit,
+        setColumnsLimit,
       }}
     >
       {children}

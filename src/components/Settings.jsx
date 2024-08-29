@@ -18,6 +18,8 @@ export default function SettingsDialog({
   setProxy,
   proxyTimeout,
   setProxyTimeout,
+  isNotifySound,
+  setIsNotifySound,
 }) {
   let [isOpen, setIsOpen] = useState(false);
 
@@ -57,6 +59,21 @@ export default function SettingsDialog({
                 <DialogTitle className="font-bold">⚙️ Settings</DialogTitle>
                 <Description>Common Settings</Description>
                 <div className="flex flex-col w-full">
+                  <div className="flex items-center gap-2 mb-3">
+                    <button
+                      onClick={() => setIsNotifySound(!isNotifySound)}
+                      className={`border rounded-md px-2 py-1 hover:bg-gray-100 `}
+                    >
+                      <span
+                        className={`${isNotifySound ? "animate-pulse" : ""}`}
+                      >
+                        {isNotifySound ? "🔊" : "🔇"}
+                      </span>
+                    </button>
+                    {isNotifySound
+                      ? "Sound Notification turned on"
+                      : "Sound Notification turned off"}
+                  </div>
                   Websocket URL:
                   <div className="flex gap-1">
                     <input
