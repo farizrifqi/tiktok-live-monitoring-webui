@@ -62,6 +62,7 @@ export default function AboutDialog({}) {
                         target="_blank"
                         className="text-blue-400 hover:text-blue-300"
                         href="https://github.com/farizrifqi/adv-ttl-client"
+                        title="Github TikTok Live Monitoring"
                       >
                         Client Repository
                       </a>
@@ -78,10 +79,32 @@ export default function AboutDialog({}) {
                       target="_blank"
                       className="text-blue-400 hover:text-blue-300"
                       href="https://zeranel.dev"
+                      title="Fariz Rifqi (zeraneL) Web"
                     >
                       Fariz Rifqi
                     </a>
                     . This tools was made with ❤️.
+                  </span>
+                  <span className="text-xs">
+                    If you have any questions, please contact me on{" "}
+                    <a
+                      href="https://tiktok.com/sosokidola"
+                      title="@sosokidola | zeraneL's Tiktok"
+                      className="text-blue-400 hover:text-blue-300"
+                      target="_blank"
+                    >
+                      TikTok
+                    </a>{" "}
+                    or{" "}
+                    <a
+                      href="https://x.com/zeraneL"
+                      title="@zeraneL | zeraneL's X (formerly Twitter)"
+                      className="text-blue-400 hover:text-blue-300"
+                      target="_blank"
+                    >
+                      My X
+                    </a>
+                    .
                   </span>
                 </div>
                 <div className="flex gap-4 items-center justify-end">

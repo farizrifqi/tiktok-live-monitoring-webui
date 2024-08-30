@@ -86,13 +86,30 @@ export default function SettingsDialog({
                 </div>
                 <div className="flex flex-col">
                   Row Limits:
-                  <div className="flex gap-1">
+                  <div className="flex flex-col gap-1">
                     <input
-                      onChange={(e) => setColumnsLimit(e.target.value)}
+                      onChange={(e) =>
+                        setColumnsLimit(
+                          e.target.value > 200
+                            ? 200
+                            : e.target.value < 1
+                            ? 1
+                            : e.target.value
+                        )
+                      }
                       value={columnLimit}
                       type="number"
-                      className="border px-3 py-1 outline-none rounded-md"
+                      min="1"
+                      max="200"
+                      className={`border px-3 py-1 outline-none rounded-md ${
+                        columnLimit >= 50 && "border-red-400"
+                      }`}
                     ></input>
+                    {columnLimit >= 50 && (
+                      <span className="text-xs text-red-400">
+                        <b>WARNING!!</b> More than 50 will cause lag.
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col">
